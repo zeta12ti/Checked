@@ -1,0 +1,14 @@
+[package]
+name = "checked"
+version = "0.1.0"
+authors = ["zeta12ti <zeta12ti@users.noreply.github.com>"]
+description = "Provides Option-like implementations of the built-in numeric types that revert to None if an overflow or underflow occurs. This crate is deliberately similar to the Wrapped struct in the standard library."
+readme = "README"
+keywords = ["integer", "float", "checked", "arithmetic"]
+categories = ["data-structures"]
+license = "MIT"
+
+[profile.release]
+lto = true
+
+[dependencies]
