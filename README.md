@@ -19,10 +19,8 @@ fn main() {
 ```
 
 Note that Add\<T\> is implemented for Checked\<T\> for all the primitive integer types T (u8, i16, etc.) so really, only the left-most integer needs to be a Checked object.
-~~However, It's impossible to implement Add\<Checked\<T\>\> for T due to the orphan rule: neither Add nor the integer primitives are defined in this crate.
-This means that if you add/subtract/etc. a Checked int and a normal int, you have to put the Checked int on the left.~~
-Turns out the orphan rule doesn't apply to Add\<MyStruct\> for u32 since MyStruct is local.
-I'll add those implementations ASAP.
+Once the arithmetic hits a Checked\<T\> on the right OR left, all the remaining results are Checked too.
+Just make sure there's a Checked somewhere before the first potential overflow.
 
 This struct is based on std::num::Wrapping, except using checked arithmetic instead of wrapped arithmetic.
 
