@@ -1,9 +1,10 @@
 [package]
 name = "checked"
-version = "0.1.0"
+version = "0.1.1"
 authors = ["zeta12ti <zeta12ti@users.noreply.github.com>"]
 repository = "https://github.com/zeta12ti/Checked/"
-description = "Provides Option-like implementations of the built-in numeric types that revert to None if an overflow or underflow occurs. This crate is deliberately similar to the Wrapped struct in the standard library."
+docuemntation = "https://docs.rs/checked/0.1.0/checked/"
+description = "Implements a wrapper over the primitive Rust types that better indicates overflow during arithmetic."
 readme = "README.md"
 keywords = ["integer", "float", "checked", "overflow", "arithmetic"]
 categories = ["data-structures"]
