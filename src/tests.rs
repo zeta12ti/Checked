@@ -15,14 +15,28 @@ macro_rules! test_binop {
     ($name:ident $t:ty: $expr1:tt $op:tt $expr2:tt == $expr3:tt) => {
         #[test]
         fn $name() {
-            let x = Checked::<$t>::from($expr1);
-            let y = Checked::<$t>::from($expr2);
+            let x1 = Checked::<$t>::from($expr1);
+            let y1 = Checked::<$t>::from($expr2);
+            let x2 = $expr1 as $t;
+            let y2 = $expr2 as $t;
             let z = Checked::<$t>::from($expr3);
-            let w = $expr2 as $t;
-            assert_eq!(x $op y, z);
-            assert_eq!(x $op w, z);
+            assert_eq!(x1 $op y1, z);
+            assert_eq!(x2 $op y1, z);
+            assert_eq!(x1 $op y2, z);
         }
     };
+}
+
+use std::ops::Add;
+impl Add<Checked<u32>> for u32 {
+    type Output = Checked<u32>;
+
+    fn add(self, other: Checked<u32>) -> Checked<u32> {
+        match other.0 {
+            Some(x) => Checked(self.checked_add(x)),
+            None => Checked(None),
+        }
+    }
 }
 
 test_binop! (add1 u8: 5 + 6 == 11);
@@ -37,6 +51,7 @@ test_binop! (and u8: 5 & 6 == 4);
 test_binop! (xor u8: 5 ^ 6 == 3);
 test_binop! (or u8: 5 | 6 == 7);
 test_binop! (rem u8: 10 % 3 == 1);
+// Strictly speaking the macro requires all the ints to be the same type
 test_binop! (shl u32: 10 << 3 == 80);
 test_binop! (shr u32: 80 >> 3 == 10);
 test_unop! (neg1 u8: - 5 == None);

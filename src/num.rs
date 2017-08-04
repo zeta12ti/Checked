@@ -1,6 +1,5 @@
 use std::fmt;
 use std::ops::*;
-// Something about i128 here (use cfg)
 
 #[derive(PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Default, Hash)]
 pub struct Checked<T>(pub Option<T>);
@@ -41,8 +40,10 @@ impl<T> From<Option<T>> for Checked<T> {
     }
 }
 
-// I'd like to impl<T, U> From<U> where T: From<U> for Checked<T> in the obvious way, but that
-// "conflicts" with the default impl From<T> for T
+// I'd like to
+// impl<T, U> From<U> where T: From<U> for Checked<T>
+// in the obvious way, but that "conflicts" with the default impl From<T> for T.
+// This would subsume both the above Froms.
 
 macro_rules! sh_impl {
     ($t:ident, $f:ident) => {
