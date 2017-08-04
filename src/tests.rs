@@ -1,4 +1,4 @@
-use super::num::Checked;
+use super::Checked;
 
 macro_rules! test_unop {
     ($name:ident $t:ty: $op:tt $expr1:tt == $expr2:tt) => {
