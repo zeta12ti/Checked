@@ -5,6 +5,16 @@ use std::ops::*;
 pub struct Checked<T>(pub Option<T>);
 
 impl<T> Checked<T> {
+    /// Creates a new Checked instance from some sort of integer.
+    /// This is essentially equivalent to From\<T\>.
+    /// # Examples
+    /// ```
+    /// use checked::Checked;
+    ///
+    /// let x = Checked::new(1_000_u32);
+    /// let y = Checked::new(1_000_000_u32);
+    /// assert_eq!(x * x, y);
+    /// ```
     pub fn new(x: T) -> Checked<T> {
         Checked(Some(x))
     }
@@ -43,7 +53,7 @@ impl<T> From<Option<T>> for Checked<T> {
 // I'd like to
 // impl<T, U> From<U> where T: From<U> for Checked<T>
 // in the obvious way, but that "conflicts" with the default impl From<T> for T.
-// This would subsume both the above Froms.
+// This would subsume both the above Froms since Option has the right From impl.
 
 // implements the unary operator "op &T"
 // based on "op T" where T is expected to be `Copy`able
@@ -89,7 +99,7 @@ macro_rules! forward_ref_binop {
     }
 }
 
-macro_rules! sh_impl {
+macro_rules! impl_sh {
     ($t:ident, $f:ident) => {
         impl Shl<Checked<$f>> for Checked<$t> {
             type Output = Checked<$t>;
@@ -155,7 +165,7 @@ macro_rules! sh_impl {
     };
 }
 
-macro_rules! sh_impl_reverse {
+macro_rules! impl_sh_reverse {
     ($t:ident, $f:ident) => {
         impl Shl<Checked<$t>> for $f {
             type Output = Checked<$f>;
@@ -185,36 +195,36 @@ macro_rules! sh_impl_reverse {
     };
 }
 
-macro_rules! sh_impl_all {
+macro_rules! impl_sh_all {
     ($($t:ident)*) => ($(
         // When checked_shX is added for other shift sizes, uncomment some of these.
-        // sh_impl! { $t, u8 }
-        // sh_impl! { $t, u16 }
-        sh_impl! { $t, u32 }
-        //sh_impl! { $t, u64 }
-        //sh_impl! { $t, usize }
+        // impl_sh! { $t, u8 }
+        // impl_sh! { $t, u16 }
+        impl_sh! { $t, u32 }
+        //impl_sh! { $t, u64 }
+        //impl_sh! { $t, usize }
 
-        //sh_impl! { $t, i8 }
-        //sh_impl! { $t, i16 }
-        //sh_impl! { $t, i32 }
-        //sh_impl! { $t, i64 }
-        //sh_impl! { $t, isize }
+        //impl_sh! { $t, i8 }
+        //impl_sh! { $t, i16 }
+        //impl_sh! { $t, i32 }
+        //impl_sh! { $t, i64 }
+        //impl_sh! { $t, isize }
 
-        // sh_impl_reverse! { u8, $t }
-        // sh_impl_reverse! { u16, $t }
-        sh_impl_reverse! { u32, $t }
-        //sh_impl_reverse! { u64, $t }
-        //sh_impl_reverse! { usize, $t }
+        // impl_sh_reverse! { u8, $t }
+        // impl_sh_reverse! { u16, $t }
+        impl_sh_reverse! { u32, $t }
+        //impl_sh_reverse! { u64, $t }
+        //impl_sh_reverse! { usize, $t }
 
-        //sh_impl_reverse! { i8, $t }
-        //sh_impl_reverse! { i16, $t }
-        //sh_impl_reverse! { i32, $t }
-        //sh_impl_reverse! { i64, $t }
-        //sh_impl_reverse! { isize, $t }
+        //impl_sh_reverse! { i8, $t }
+        //impl_sh_reverse! { i16, $t }
+        //impl_sh_reverse! { i32, $t }
+        //impl_sh_reverse! { i64, $t }
+        //impl_sh_reverse! { isize, $t }
     )*)
 }
 
-sh_impl_all! { u8 u16 u32 u64 usize i8 i16 i32 i64 isize }
+impl_sh_all! { u8 u16 u32 u64 usize i8 i16 i32 i64 isize }
 
 // implements unary operators for checked types
 macro_rules! impl_unop {
