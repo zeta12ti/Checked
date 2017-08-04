@@ -16,7 +16,7 @@ use checked::Checked;
     }
 ```
 
-Note that Add<T> is implemented for Checked<T> for all the primitive integer types T (u8, i16, etc.) so really, only the left-most integer needs to be a Checked object. However, It's impossible to implement Add<Checked<T>> for T due to the orphan rule: neither Add nor the integer primitives are defined in this crate. This means that if you add/subtract/etc. a Checked int and a normal int, you have to put the Checked int on the left.
+Note that Add\<T\> is implemented for Checked\<T\> for all the primitive integer types T (u8, i16, etc.) so really, only the left-most integer needs to be a Checked object. However, It's impossible to implement Add\<Checked\<T\>\> for T due to the orphan rule: neither Add nor the integer primitives are defined in this crate. This means that if you add/subtract/etc. a Checked int and a normal int, you have to put the Checked int on the left.
 
 This struct is based on std::num::Wrapping, except using checked arithmetic instead of wrapped arithmetic.
 
