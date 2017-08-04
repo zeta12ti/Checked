@@ -7,6 +7,7 @@ macro_rules! test_unop {
             let x = Checked::<$t>::from($expr1);
             let y = Checked::<$t>::from($expr2);
             assert_eq!($op x, y);
+            assert_eq!($op &x, y);
         }
     };
 }
@@ -23,6 +24,15 @@ macro_rules! test_binop {
             assert_eq!(x1 $op y1, z);
             assert_eq!(x2 $op y1, z);
             assert_eq!(x1 $op y2, z);
+            assert_eq!(&x1 $op y1, z);
+            assert_eq!(&x2 $op y1, z);
+            assert_eq!(&x1 $op y2, z);
+            assert_eq!(x1 $op &y1, z);
+            assert_eq!(x2 $op &y1, z);
+            assert_eq!(x1 $op &y2, z);
+            assert_eq!(&x1 $op &y1, z);
+            assert_eq!(&x2 $op &y1, z);
+            assert_eq!(&x1 $op &y2, z);
         }
     };
 }
@@ -39,7 +49,7 @@ test_binop! (and u8: 5 & 6 == 4);
 test_binop! (xor u8: 5 ^ 6 == 3);
 test_binop! (or u8: 5 | 6 == 7);
 test_binop! (rem u8: 10 % 3 == 1);
-// Strictly speaking the macro requires all the ints to be the same type
+// Strictly speaking the macro requires all the ints to be the same type, so we have to use u32.
 test_binop! (shl u32: 10 << 3 == 80);
 test_binop! (shr u32: 80 >> 3 == 10);
 test_unop! (neg1 u8: - 5 == None);
