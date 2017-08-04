@@ -27,18 +27,6 @@ macro_rules! test_binop {
     };
 }
 
-use std::ops::Add;
-impl Add<Checked<u32>> for u32 {
-    type Output = Checked<u32>;
-
-    fn add(self, other: Checked<u32>) -> Checked<u32> {
-        match other.0 {
-            Some(x) => Checked(self.checked_add(x)),
-            None => Checked(None),
-        }
-    }
-}
-
 test_binop! (add1 u8: 5 + 6 == 11);
 test_binop! (add2 u32: 3_000_000_000 + 2_000_000_000 == None);
 test_binop! (add3 i32: (-2_000_000_000) + (-2_000_000_000) == None);
