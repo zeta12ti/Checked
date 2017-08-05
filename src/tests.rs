@@ -90,7 +90,7 @@ test_binop! (add1 u8: 5 + 6 == 11);
 test_binop! (add2 u32: 3_000_000_000 + 2_000_000_000 == None);
 test_binop! (add3 i32: (-2_000_000_000) + (-2_000_000_000) == None);
 test_binop! (sub u8: 5 - 6 == None);
-test_binop! (mul u8: 5 * 6 == 30);
+test_binop! (mul1 u8: 5 * 6 == 30);
 test_binop! (mul2 i32: 2_000_000_000 * 3 == None);
 test_binop! (div1 u8: 10 / 3 == 3);
 test_binop! (div2 u8: 10 / 0 == None);
