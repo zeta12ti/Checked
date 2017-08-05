@@ -25,7 +25,7 @@ fn main() {
 ```
 
 ## Documentation
-Documentation may be found [here](https://docs.rs/checked/0.2.0/checked/).
+Documentation may be found [here](https://docs.rs/checked/0.3.0/checked/).
 
 ## Contributing
 I may try to add more features in time: make an Issue or Pull request to get the ball rolling.
