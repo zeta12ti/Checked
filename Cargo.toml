@@ -1,9 +1,9 @@
 [package]
 name = "checked"
-version = "0.3.1"
+version = "0.3.2"
 authors = ["zeta12ti <zeta12ti@users.noreply.github.com>"]
 repository = "https://github.com/zeta12ti/Checked/"
-documentation = "https://docs.rs/checked/0.3.1/checked/"
+documentation = "https://docs.rs/checked/0.3.2/checked/"
 description = "Implements a wrapper over the primitive Rust types that better indicates overflow during arithmetic."
 readme = "README.md"
 keywords = ["integer", "checked", "overflow", "arithmetic"]
