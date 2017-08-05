@@ -132,6 +132,12 @@ macro_rules! impl_sh {
             }
         }
 
+        impl ShlAssign<Checked<$f>> for Checked<$t> {
+            fn shl_assign(&mut self, other: Checked<$f>) {
+                *self = *self << other;
+            }
+        }
+
         impl Shr<Checked<$f>> for Checked<$t> {
             type Output = Checked<$t>;
 
@@ -159,6 +165,12 @@ macro_rules! impl_sh {
 
         impl ShrAssign<$f> for Checked<$t> {
             fn shr_assign(&mut self, other: $f) {
+                *self = *self >> other;
+            }
+        }
+
+        impl ShrAssign<Checked<$f>> for Checked<$t> {
+            fn shr_assign(&mut self, other: Checked<$f>) {
                 *self = *self >> other;
             }
         }
@@ -244,7 +256,7 @@ macro_rules! impl_unop {
     }
 }
 
-// implements unary operators for checked types (with no checked operation)
+// implements unary operators for checked types (with no checked method)
 macro_rules! impl_unop_unchecked {
     (impl $imp:ident, $method:ident for $t:ty {$op:tt}) => {
         impl $imp for Checked<$t> {
@@ -304,7 +316,7 @@ macro_rules! impl_binop {
     }
 }
 
-// implements binary operators for checked types (no checked operation)
+// implements binary operators for checked types (no checked method)
 macro_rules! impl_binop_unchecked {
     (impl $imp:ident, $method:ident for $t:ty {$op:tt}) => {
         impl $imp for Checked<$t> {
