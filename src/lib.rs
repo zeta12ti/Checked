@@ -15,6 +15,7 @@
 //! ```
 //!
 //! All the basic arithmetic operations are implemented.
+//!
 //! ```
 //! assert_eq!(Checked::<u8>::from(5) + Checked::<u8>::from(6), Checked::<u8>::from(11));
 //! assert_eq!(Checked::<u8>::from(5) - Checked::<u8>::from(6), Checked::<u8>::from(None));
@@ -25,6 +26,7 @@
 //! ```
 //!
 //! Including bitwise operations.
+//!
 //! ```
 //! assert_eq!(Checked::<u8>::from(5) & Checked::<u8>::from(6), Checked::<u8>::from(4));
 //! assert_eq!(Checked::<u8>::from(5) | Checked::<u8>::from(6), Checked::<u8>::from(7));
@@ -36,6 +38,7 @@
 //!
 //! Ord is implemented, and the overflow state is considered less than everything
 //! (may change this in the future)
+//!
 //! ```
 //! assert!(Checked::from(1_000_u32) <= Checked::from(10_000_u32));
 //! assert!(!(Checked::from(1_000_u32) <= Checked::from(None)));
