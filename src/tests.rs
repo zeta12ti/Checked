@@ -103,3 +103,10 @@ test_binop! (shr u8, u32: 80 >> 3 == 10);
 test_unop! (neg1 u8: - 5 == None);
 test_unop! (neg2 i8: - 5 == (-5));
 test_unop! (not i8: ! 5 == (-6));
+
+#[test]
+fn order() {
+    assert!(Checked::from(1_000_u32) <= Checked::from(10_000_u32));
+    assert!(!(Checked::from(1_000_u32) <= Checked::from(None)));
+    assert!((Checked::from(None) <= Checked::from(1_000_u32)));
+}
