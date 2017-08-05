@@ -6,7 +6,7 @@ repository = "https://github.com/zeta12ti/Checked/"
 documentation = "https://docs.rs/checked/0.2.0/checked/"
 description = "Implements a wrapper over the primitive Rust types that better indicates overflow during arithmetic."
 readme = "README.md"
-keywords = ["integer", "float", "checked", "overflow", "arithmetic"]
+keywords = ["integer", "checked", "overflow", "arithmetic"]
 categories = ["data-structures"]
 license = "MIT"
 
