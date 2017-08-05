@@ -26,7 +26,3 @@ This struct is based on std::num::Wrapping, except using checked arithmetic inst
 
 ## Contributing
 I may try to add more features in time: make an Issue or Pull request to get the ball rolling.
-
-## Upcoming features
-* More detailed docs are coming.
-* Add/Multiply/etc. Checked ints to normal ints on both sides.
