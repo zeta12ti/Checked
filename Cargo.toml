@@ -14,7 +14,7 @@ license = "MIT"
 lto = true
 
 [badges]
-travis-ci = { repository = "zeta12ti/checked", branch = "master" }
+travis-ci = { repository = "zeta12ti/Checked", branch = "master" }
 appveyor = { repository = "zeta12ti/checked", branch = "master", service = "github" }
 
 [dependencies]
