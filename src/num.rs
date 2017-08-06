@@ -1,7 +1,7 @@
 use std::fmt;
 use std::ops::*;
 
-#[derive(PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Default, Hash)]
+#[derive(PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Hash)]
 pub struct Checked<T>(pub Option<T>);
 
 impl<T> Checked<T> {
@@ -17,6 +17,12 @@ impl<T> Checked<T> {
     /// ```
     pub fn new(x: T) -> Checked<T> {
         Checked(Some(x))
+    }
+}
+
+impl<T> Default for Checked<T> {
+    fn default() -> Checked<T> {
+        Checked(None)
     }
 }
 
@@ -38,6 +44,10 @@ impl<T: fmt::Display> fmt::Display for Checked<T> {
     }
 }
 
+// I'd like to do
+// impl<T, U> From<U> where T: From<U> for Checked<T>
+// in the obvious way, but that "conflicts" with the default impl From<T> for T.
+// This would subsume both the above Froms since Option has the right From impl.
 impl<T> From<T> for Checked<T> {
     fn from(x: T) -> Checked<T> {
         Checked(Some(x))
@@ -49,11 +59,6 @@ impl<T> From<Option<T>> for Checked<T> {
         Checked(x)
     }
 }
-
-// I'd like to
-// impl<T, U> From<U> where T: From<U> for Checked<T>
-// in the obvious way, but that "conflicts" with the default impl From<T> for T.
-// This would subsume both the above Froms since Option has the right From impl.
 
 // implements the unary operator "op &T"
 // based on "op T" where T is expected to be `Copy`able
