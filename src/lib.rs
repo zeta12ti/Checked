@@ -17,6 +17,8 @@
 //! All the basic arithmetic operations are implemented.
 //!
 //! ```
+//! use checked::Checked;
+//!
 //! assert_eq!(Checked::<u8>::from(5) + Checked::<u8>::from(6), Checked::<u8>::from(11));
 //! assert_eq!(Checked::<u8>::from(5) - Checked::<u8>::from(6), Checked::<u8>::from(None));
 //! assert_eq!(Checked::<u8>::from(5) * Checked::<u8>::from(6), Checked::<u8>::from(30));
@@ -28,6 +30,8 @@
 //! Including bitwise operations.
 //!
 //! ```
+//! use checked::Checked;
+//!
 //! assert_eq!(Checked::<u8>::from(5) & Checked::<u8>::from(6), Checked::<u8>::from(4));
 //! assert_eq!(Checked::<u8>::from(5) | Checked::<u8>::from(6), Checked::<u8>::from(7));
 //! assert_eq!(Checked::<u8>::from(5) ^ Checked::<u8>::from(6), Checked::<u8>::from(3));
@@ -40,6 +44,8 @@
 //! (may change this in the future)
 //!
 //! ```
+//! use checked::Checked;
+//!
 //! assert!(Checked::from(1_000_u32) <= Checked::from(10_000_u32));
 //! assert!(!(Checked::from(1_000_u32) <= Checked::from(None)));
 //! assert!((Checked::from(None) <= Checked::from(1_000_u32)));
