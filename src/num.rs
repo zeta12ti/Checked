@@ -20,6 +20,8 @@ impl<T> Checked<T> {
     }
 }
 
+// The derived Default only works if T has Default
+// Even though this is what it would be anyway
 impl<T> Default for Checked<T> {
     fn default() -> Checked<T> {
         Checked(None)
@@ -47,7 +49,7 @@ impl<T: fmt::Display> fmt::Display for Checked<T> {
 // I'd like to do
 // impl<T, U> From<U> where T: From<U> for Checked<T>
 // in the obvious way, but that "conflicts" with the default impl From<T> for T.
-// This would subsume both the above Froms since Option has the right From impl.
+// This would subsume both the below Froms since Option has the right From impl.
 impl<T> From<T> for Checked<T> {
     fn from(x: T) -> Checked<T> {
         Checked(Some(x))
@@ -57,6 +59,18 @@ impl<T> From<T> for Checked<T> {
 impl<T> From<Option<T>> for Checked<T> {
     fn from(x: Option<T>) -> Checked<T> {
         Checked(x)
+    }
+}
+
+impl<T> Into<Option<T>> for Checked<T> {
+    fn into(self) -> Option<T> {
+        self.0
+    }
+}
+
+impl<T> AsRef<Option<T>> for Checked<T> {
+    fn as_ref(&self) -> &Option<T> {
+        &self.0
     }
 }
 
