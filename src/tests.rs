@@ -113,5 +113,12 @@ fn order() {
 
 #[test]
 fn new_checked() {
-    assert_eq(Checked::new(100) == Checked(Some(100)))
+    assert_eq!(Checked::new(100) == Checked(Some(100)))
+}
+
+#[test]
+fn from_checked() {
+    assert_eq!(Checked::from(100_u32) = Checked(Some(100_u32)));
+    assert_eq!(Checked::from(Some(100_u32)) = Checked(Some(100_u32)));
+    assert_eq!(Checked::from(None) = Checked(None));
 }
