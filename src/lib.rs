@@ -54,5 +54,8 @@
 mod num;
 pub use num::Checked;
 
+mod option_like;
+pub use option_like::{IntoOption, AsRefOption, AsMutOption};
+
 #[cfg(test)]
 mod tests;
