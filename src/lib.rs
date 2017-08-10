@@ -41,7 +41,7 @@
 //! ```
 //!
 //! Ord is implemented, and the overflow state is considered less than everything
-//! (may change this in the future)
+//! (this may change in the future).
 //!
 //! ```
 //! use checked::Checked;
