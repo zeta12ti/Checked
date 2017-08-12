@@ -23,6 +23,7 @@ impl<T> Checked<T> {
 
 // The derived Default only works if T has Default
 // Even though this is what it would be anyway
+// May change this to T's default (if it has one)
 impl<T> Default for Checked<T> {
     fn default() -> Checked<T> {
         Checked(None)
@@ -31,7 +32,7 @@ impl<T> Default for Checked<T> {
 
 impl<T: fmt::Debug> fmt::Debug for Checked<T> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self.0 {
+        match **self {
             Some(ref x) => x.fmt(f),
             None => "overflow".fmt(f),
         }
@@ -40,7 +41,7 @@ impl<T: fmt::Debug> fmt::Debug for Checked<T> {
 
 impl<T: fmt::Display> fmt::Display for Checked<T> {
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self.0 {
+        match **self {
             Some(ref x) => x.fmt(f),
             None => "overflow".fmt(f),
         }
@@ -127,7 +128,7 @@ macro_rules! impl_sh {
             type Output = Checked<$t>;
 
             fn shl(self, other: Checked<$f>) -> Checked<$t> {
-                match (self.0, other.0) {
+                match (*self, *other) {
                     (Some(x), Some(y)) => Checked(x.checked_shl(y)),
                     _ => Checked(None),
                 }
@@ -138,7 +139,7 @@ macro_rules! impl_sh {
             type Output = Checked<$t>;
 
             fn shl(self, other: $f) -> Checked<$t> {
-                match self.0 {
+                match *self {
                     Some(x) => Checked(x.checked_shl(other)),
                     None => Checked(None),
                 }
@@ -164,7 +165,7 @@ macro_rules! impl_sh {
             type Output = Checked<$t>;
 
             fn shr(self, other: Checked<$f>) -> Checked<$t> {
-                match (self.0, other.0) {
+                match (*self, *other) {
                     (Some(x), Some(y)) => Checked(x.checked_shr(y)),
                     _ => Checked(None),
                 }
@@ -175,7 +176,7 @@ macro_rules! impl_sh {
             type Output = Checked<$t>;
 
             fn shr(self, other: $f) -> Checked<$t> {
-                match self.0 {
+                match *self {
                     Some(x) => Checked(x.checked_shr(other)),
                     None => Checked(None),
                 }
@@ -205,7 +206,7 @@ macro_rules! impl_sh_reverse {
             type Output = Checked<$f>;
 
             fn shl(self, other: Checked<$t>) -> Checked<$f> {
-                match other.0 {
+                match *other {
                     Some(x) => Checked(self.checked_shl(x)),
                     None => Checked(None),
                 }
@@ -218,7 +219,7 @@ macro_rules! impl_sh_reverse {
             type Output = Checked<$f>;
 
             fn shr(self, other: Checked<$t>) -> Checked<$f> {
-                match other.0 {
+                match *other {
                     Some(x) => Checked(self.checked_shr(x)),
                     None => Checked(None),
                 }
@@ -267,7 +268,7 @@ macro_rules! impl_unop {
             type Output = Checked<$t>;
 
             fn $method(self) -> Checked<$t> {
-                match self.0 {
+                match *self {
                     Some(x) => Checked(x.$checked_method()),
                     None => Checked(None)
                 }
@@ -285,7 +286,7 @@ macro_rules! impl_unop_unchecked {
             type Output = Checked<$t>;
 
             fn $method(self) -> Checked<$t> {
-                match self.0 {
+                match *self {
                     Some(x) => Checked(Some($op x)),
                     None => Checked(None)
                 }
@@ -303,7 +304,7 @@ macro_rules! impl_binop {
             type Output = Checked<$t>;
 
             fn $method(self, other: Checked<$t>) -> Checked<$t> {
-                match (self.0, other.0) {
+                match (*self, *other) {
                     (Some(x), Some(y)) => Checked(x.$checked_method(y)),
                     _ => Checked(None),
                 }
@@ -314,7 +315,7 @@ macro_rules! impl_binop {
             type Output = Checked<$t>;
 
             fn $method(self, other: $t) -> Checked<$t> {
-                match self.0 {
+                match *self {
                     Some(x) => Checked(x.$checked_method(other)),
                     _ => Checked(None),
                 }
@@ -325,7 +326,7 @@ macro_rules! impl_binop {
             type Output = Checked<$t>;
 
             fn $method(self, other: Checked<$t>) -> Checked<$t> {
-                match other.0 {
+                match *other {
                     Some(x) => Checked(self.$checked_method(x)),
                     None => Checked(None),
                 }
@@ -345,7 +346,7 @@ macro_rules! impl_binop_unchecked {
             type Output = Checked<$t>;
 
             fn $method(self, other: Checked<$t>) -> Checked<$t> {
-                match (self.0, other.0) {
+                match (*self, *other) {
                     (Some(x), Some(y)) => Checked(Some(x $op y)),
                     _ => Checked(None),
                 }
@@ -356,7 +357,7 @@ macro_rules! impl_binop_unchecked {
             type Output = Checked<$t>;
 
             fn $method(self, other: $t) -> Checked<$t> {
-                match self.0 {
+                match *self {
                     Some(x) => Checked(Some(x $op other)),
                     _ => Checked(None),
                 }
@@ -367,7 +368,7 @@ macro_rules! impl_binop_unchecked {
             type Output = Checked<$t>;
 
             fn $method(self, other: Checked<$t>) -> Checked<$t> {
-                match other.0 {
+                match *other {
                     Some(x) => Checked(Some(self $op x)),
                     None => Checked(None),
                 }
