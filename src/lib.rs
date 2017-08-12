@@ -40,15 +40,41 @@
 //! assert_eq!(Checked::<u8>::from(160) >> Checked::<u32>::from(5), Checked::<u8>::from(5));
 //! ```
 //!
-//! Ord is implemented, and the overflow state is considered less than everything
-//! (this may change in the future).
+//! Any single operand can be the ordinary integer and it'll get converted.
+//!
+//! ```
+//! use checked::Checked;
+//!
+//! assert_eq!(5 + Checked::<u8>::from(6), Checked::<u8>::from(11));
+//! assert_eq!(Checked::<u8>::from(5) + 6, Checked::<u8>::from(11));
+//! assert_eq!5 - Checked::<u8>::from(6), Checked::<u8>::from(None));
+//! assert_eq!(Checked::<u8>::from(5) - 6, Checked::<u8>::from(None));
+//! assert_eq!(5 * Checked::<u8>::from(6), Checked::<u8>::from(30));
+//! assert_eq!(Checked::<u8>::from(5) * 6, Checked::<u8>::from(30));
+//! assert_eq!(5 / Checked::<u8>::from(6), Checked::<u8>::from(0));
+//! assert_eq!(Checked::<u8>::from(5) / 6, Checked::<u8>::from(0));
+//! assert_eq!(5 % Checked::<u8>::from(6), Checked::<u8>::from(5));
+//! assert_eq!(Checked::<u8>::from(5) % 6, Checked::<u8>::from(5));
+//! assert_eq!(5 & Checked::<u8>::from(6), Checked::<u8>::from(4));
+//! assert_eq!(Checked::<u8>::from(5) & 6, Checked::<u8>::from(4));
+//! assert_eq!(5 | Checked::<u8>::from(6), Checked::<u8>::from(7));
+//! assert_eq!(Checked::<u8>::from(5) | 6, Checked::<u8>::from(7));
+//! assert_eq!(5 ^ Checked::<u8>::from(6), Checked::<u8>::from(3));
+//! assert_eq!(Checked::<u8>::from(5) ^ 6, Checked::<u8>::from(3));
+//! assert_eq!(5 << Checked::<u32>::from(5), Checked::<u8>::from(160));
+//! assert_eq!(Checked::<u8>::from(5) << 5, Checked::<u8>::from(160));
+//! assert_eq!(160 >> Checked::<u32>::from(5), Checked::<u8>::from(5));
+//! assert_eq!(Checked::<u8>::from(160) >> 5, Checked::<u8>::from(5));
+//! ```
+//!
+//! `PartialOrd` is implemented, and the overflow state not comparable to anything else.
 //!
 //! ```
 //! use checked::Checked;
 //!
 //! assert!(Checked::from(1_000_u32) <= Checked::from(10_000_u32));
 //! assert!(!(Checked::from(1_000_u32) <= Checked::from(None)));
-//! assert!((Checked::from(None) <= Checked::from(1_000_u32)));
+//! assert!(!(Checked::from(None) <= Checked::from(1_000_u32)));
 //! ```
 
 mod num;
