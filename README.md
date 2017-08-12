@@ -4,8 +4,8 @@ Implements a wrapper over the primitive Rust types that better indicates overflo
 The struct `Checked` derefs into an option that either contains the number, or `None` if an overflow occurred.
 This means that all of `Option`'s methods can be used.
 
-Note that `Add\<T\>` is implemented for `Checked\<T\>` for all the primitive integer types `T` (`u8`, `i16`, etc.) so really, only the left-most integer needs to be a `Checked` object.
-Once the arithmetic hits a `Checked\<T\`> on the right OR left, all the remaining results are `Checked` too.
+Note that `Add<T>` is implemented for `Checked<T>` for all the primitive integer types `T` (`u8`, `i16`, etc.) so really, only the left-most integer needs to be a `Checked` object.
+Once the arithmetic hits a `Checked<T`> on the right OR left, all the remaining results are `Checked` too.
 Just make sure there's a `Checked` somewhere before the first potential overflow.
 
 This struct is based on `std::num::Wrapping`, except using checked arithmetic instead of wrapped arithmetic.
