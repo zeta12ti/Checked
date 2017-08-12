@@ -113,12 +113,143 @@ fn order() {
 
 #[test]
 fn new_checked() {
-    assert_eq!(Checked::new(100) == Checked(Some(100)))
+    assert_eq!(Checked::new(100), Checked(Some(100)))
 }
 
 #[test]
 fn from_checked() {
-    assert_eq!(Checked::from(100_u32) = Checked(Some(100_u32)));
-    assert_eq!(Checked::from(Some(100_u32)) = Checked(Some(100_u32)));
-    assert_eq!(Checked::from(None) = Checked(None));
+    assert_eq!(Checked::from(100_u32), Checked(Some(100_u32)));
+    assert_eq!(Checked::from(Some(100_u32)), Checked(Some(100_u32)));
+    assert_eq!(Checked::<u64>::from(None), Checked::<u64>(None));
+}
+
+#[test]
+fn consuming_option_methods() {
+    let x = Checked::from(1_000_i64);
+    assert_eq!(x.expect("AHH!!!"), 1_000);
+
+    let x = Checked::from(1_000_i64);
+    assert_eq!(x.unwrap(), 1_000);
+
+    let x = Checked::from(1_000_i64);
+    assert_eq!(x.unwrap_or(10), 1_000);
+
+    let x = Checked::<i64>::from(None);
+    assert_eq!(x.unwrap_or(10), 10);
+
+    let x = Checked::from(1_000_i64);
+    assert_eq!(x.unwrap_or_else(|| 10), 1_000);
+
+    let x = Checked::<i64>::from(None);
+    assert_eq!(x.unwrap_or_else(|| 10), 10);
+
+    let x = Checked::from(1_000_i64);
+    assert_eq!(x.map(|x| x + 15), Some(1_015));
+
+    let x = Checked::<i64>::from(None);
+    assert_eq!(x.map(|x| x + 15), None);
+
+    let x = Checked::from(1_000_i64);
+    assert_eq!(x.map_or(10, |x| x + 15), 1_015);
+
+    let x = Checked::<i64>::from(None);
+    assert_eq!(x.map_or(10, |x| x + 15), 10);
+
+    let x = Checked::from(1_000_i64);
+    assert_eq!(x.map_or_else(|| 10, |x| x + 15), 1_015);
+
+    let x = Checked::<i64>::from(None);
+    assert_eq!(x.map_or_else(|| 10, |x| x + 15), 10);
+
+    let x = Checked::from(1_000_i64);
+    assert_eq!(x.ok_or(14), Ok(1_000));
+
+    let x = Checked::<i64>::from(None);
+    assert_eq!(x.ok_or(14), Err(14));
+
+    let x = Checked::from(1_000_i64);
+    assert_eq!(x.ok_or_else(|| 14), Ok(1_000));
+
+    let x = Checked::<i64>::from(None);
+    assert_eq!(x.ok_or_else(|| 14), Err(14));
+
+    let x = Checked::from(1_000_i64);
+    assert_eq!(x.and(Some(19)), Some(19));
+
+    let x = Checked::<i64>::from(None);
+    assert_eq!(x.and(Some(19)), None);
+
+    let x = Checked::from(1_000_i64);
+    assert_eq!(x.and_then(|x| Some(x + 15)), Some(1_015));
+
+    let x = Checked::<i64>::from(None);
+    assert_eq!(x.and_then(|x| Some(x + 15)), None);
+
+    let x = Checked::from(1_000_i64);
+    assert_eq!(x.or(Some(19)), Some(1_000));
+
+    let x = Checked::<i64>::from(None);
+    assert_eq!(x.or(Some(19)), Some(19));
+
+    let x = Checked::from(1_000_i64);
+    assert_eq!(x.or_else(|| Some(19)), Some(1_000));
+
+    let x = Checked::<i64>::from(None);
+    assert_eq!(x.or_else(|| Some(19)), Some(19));
+}
+
+#[test]
+fn ref_option_methods() {
+    let x = Checked::from(1_000_i64);
+    let y = Checked::<i64>::from(None);
+
+    assert!(x.is_some());
+    assert!(!y.is_some());
+
+    assert!(!x.is_none());
+    assert!(y.is_none());
+
+    // More thorough testing is done in the docs, this mostly just checks to see if it works at all.
+    Option::as_ref(&x);
+    Option::as_ref(&y);
+
+    println!("Numbers in x: ");
+    for t in x.iter() {
+        println!("{:?}", t);
+    }
+
+
+    println!("Numbers in y: ");
+    for t in y.iter() {
+        println!("{:?}", t);
+    }
+}
+
+#[test]
+fn mut_ref_option_methods() {
+    let mut x = Checked::from(1_000_i64);
+    let mut y = Checked::<i64>::from(None);
+
+    Option::as_mut(&mut x);
+    Option::as_mut(&mut y);
+
+    println!("Numbers in x: ");
+    for t in x.iter_mut() {
+        println!("{:?}", t);
+    }
+
+
+    println!("Numbers in y: ");
+    for t in y.iter_mut() {
+        println!("{:?}", t);
+    }
+
+    let z = x.take();
+
+    assert_eq!(z, Some(1_000_i64));
+    assert_eq!(x, Checked::<i64>::from(None));
+
+    let w = y.take();
+    assert_eq!(w, None);
+    assert_eq!(y, Checked::<i64>::from(None));
 }
