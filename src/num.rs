@@ -1,6 +1,7 @@
 use std::fmt;
 use std::ops::*;
 
+/// The Checked type. See the [module level documentation for more.](index.html)
 #[derive(PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Hash)]
 pub struct Checked<T>(pub Option<T>);
 
@@ -47,8 +48,8 @@ impl<T: fmt::Display> fmt::Display for Checked<T> {
 }
 
 // I'd like to do
-// impl<T, U> From<U> where T: From<U> for Checked<T>
-// in the obvious way, but that "conflicts" with the default impl From<T> for T.
+// `impl<T, U> From<U> where T: From<U> for Checked<T>``
+// in the obvious way, but that "conflicts" with the default `impl From<T> for T`.
 // This would subsume both the below Froms since Option has the right From impl.
 impl<T> From<T> for Checked<T> {
     fn from(x: T) -> Checked<T> {
@@ -62,20 +63,22 @@ impl<T> From<Option<T>> for Checked<T> {
     }
 }
 
-impl<T> Into<Option<T>> for Checked<T> {
-    fn into(self) -> Option<T> {
-        self.0
-    }
-}
+impl<T> Deref for Checked<T> {
+    type Target = Option<T>;
 
-impl<T> AsRef<Option<T>> for Checked<T> {
-    fn as_ref(&self) -> &Option<T> {
+    fn deref(&self) -> &Option<T> {
         &self.0
     }
 }
 
-// implements the unary operator "op &T"
-// based on "op T" where T is expected to be `Copy`able
+impl<T> DerefMut for Checked<T> {
+    fn deref_mut(&mut self) -> &mut Option<T> {
+        &mut self.0
+    }
+}
+
+// implements the unary operator `op &T`
+// based on `op T` where `T` is expected to be `Copy`able
 macro_rules! forward_ref_unop {
     (impl $imp:ident, $method:ident for $t:ty {}) => {
         impl<'a> $imp for &'a $t {
@@ -415,6 +418,7 @@ macro_rules! checked_impl {
             impl_binop_unchecked! { impl BitAnd, bitand for $t {&} }
             impl_binop_assign! { impl BitAndAssign, bitand_assign for $t {&} }
             impl_unop! { impl Neg, neg, checked_neg for $t {} }
+
         )*
     };
 }
