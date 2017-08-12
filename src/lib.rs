@@ -47,24 +47,8 @@
 //!
 //! assert_eq!(5 + Checked::<u8>::from(6), Checked::<u8>::from(11));
 //! assert_eq!(Checked::<u8>::from(5) + 6, Checked::<u8>::from(11));
-//! assert_eq!5 - Checked::<u8>::from(6), Checked::<u8>::from(None));
+//! assert_eq!(5 - Checked::<u8>::from(6), Checked::<u8>::from(None));
 //! assert_eq!(Checked::<u8>::from(5) - 6, Checked::<u8>::from(None));
-//! assert_eq!(5 * Checked::<u8>::from(6), Checked::<u8>::from(30));
-//! assert_eq!(Checked::<u8>::from(5) * 6, Checked::<u8>::from(30));
-//! assert_eq!(5 / Checked::<u8>::from(6), Checked::<u8>::from(0));
-//! assert_eq!(Checked::<u8>::from(5) / 6, Checked::<u8>::from(0));
-//! assert_eq!(5 % Checked::<u8>::from(6), Checked::<u8>::from(5));
-//! assert_eq!(Checked::<u8>::from(5) % 6, Checked::<u8>::from(5));
-//! assert_eq!(5 & Checked::<u8>::from(6), Checked::<u8>::from(4));
-//! assert_eq!(Checked::<u8>::from(5) & 6, Checked::<u8>::from(4));
-//! assert_eq!(5 | Checked::<u8>::from(6), Checked::<u8>::from(7));
-//! assert_eq!(Checked::<u8>::from(5) | 6, Checked::<u8>::from(7));
-//! assert_eq!(5 ^ Checked::<u8>::from(6), Checked::<u8>::from(3));
-//! assert_eq!(Checked::<u8>::from(5) ^ 6, Checked::<u8>::from(3));
-//! assert_eq!(5 << Checked::<u32>::from(5), Checked::<u8>::from(160));
-//! assert_eq!(Checked::<u8>::from(5) << 5, Checked::<u8>::from(160));
-//! assert_eq!(160 >> Checked::<u32>::from(5), Checked::<u8>::from(5));
-//! assert_eq!(Checked::<u8>::from(160) >> 5, Checked::<u8>::from(5));
 //! ```
 //!
 //! `PartialOrd` is implemented, and the overflow state not comparable to anything else.
