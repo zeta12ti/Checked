@@ -117,7 +117,7 @@ test_unop! (not i8: ! 5 == (-6));
 fn order() {
     assert!(Checked::from(1_000_u32) <= Checked::from(10_000_u32));
     assert!(!(Checked::from(1_000_u32) <= Checked::from(None)));
-    assert!((Checked::from(None) <= Checked::from(1_000_u32)));
+    assert!(!(Checked::from(None) <= Checked::from(1_000_u32)));
 }
 
 #[test]
