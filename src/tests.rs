@@ -1,5 +1,14 @@
 use super::Checked;
 
+#[test]
+fn readme_example() {
+    let x = Checked::from(1_000_000_000_u32) * 3 + 2_000_000_000;
+    match *x {
+        Some(y) => println!("Didn't overflow: x is {}.", y),
+        None => println!("The arithmetic overflowed."),
+    }
+}
+
 // Test a unary operator
 macro_rules! test_unop {
     ($name:ident $t:ty: $op:tt $expr1:tt == $expr2:tt) => {
