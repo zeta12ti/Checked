@@ -1,8 +1,9 @@
 use std::fmt;
 use std::ops::*;
+use std::cmp::Ordering;
 
 /// The Checked type. See the [module level documentation for more.](index.html)
-#[derive(PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Hash)]
+#[derive(PartialEq, Eq, Clone, Copy, Hash)]
 pub struct Checked<T>(pub Option<T>);
 
 impl<T> Checked<T> {
@@ -75,6 +76,22 @@ impl<T> Deref for Checked<T> {
 impl<T> DerefMut for Checked<T> {
     fn deref_mut(&mut self) -> &mut Option<T> {
         &mut self.0
+    }
+}
+
+impl<T: PartialOrd> PartialOrd for Checked<T> {
+    fn partial_cmp(&self, other: &Checked<T>) -> Option<Ordering> {
+        // I'm not really sure why we can't match **self etc. here.
+        // Even with refs everywhere it complains
+        // Note what happens in this implementation:
+        // we take the reference self, and call deref (the method) on it
+        // By Deref coercion, self gets derefed to a Checked<T>
+        // Now Checked<T>'s deref gets called, returning a &Option<T>
+        // That's what gets matched
+        match (self.deref(), other.deref()) {
+            (&Some(ref x), &Some(ref y)) => PartialOrd::partial_cmp(x, y),
+            _ => None,
+        }
     }
 }
 
