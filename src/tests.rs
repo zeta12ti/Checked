@@ -218,7 +218,6 @@ fn ref_option_methods() {
     assert!(!x.is_none());
     assert!(y.is_none());
 
-    // More thorough testing is done in the docs, this mostly just checks to see if it works at all.
     Option::as_ref(&x);
     Option::as_ref(&y);
 

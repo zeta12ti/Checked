@@ -1,7 +1,7 @@
 //! Checked arithmetic.
 //!
-//! The Checked struct allows you to perform checked arithmetic without an overabundance of
-//! .checked_* calls.
+//! The `Checked` struct allows you to perform checked arithmetic without an overabundance of
+//! `.checked_*` calls.
 //! # Examples
 //! ```
 //! use checked::Checked;
@@ -40,7 +40,7 @@
 //! assert_eq!(Checked::<u8>::from(160) >> Checked::<u32>::from(5), Checked::<u8>::from(5));
 //! ```
 //!
-//! Any single operand can be the ordinary integer and it'll get converted.
+//! Any single operand can be an ordinary integer and it'll get converted.
 //!
 //! ```
 //! use checked::Checked;
