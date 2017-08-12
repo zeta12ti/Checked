@@ -51,7 +51,7 @@
 //! assert_eq!(Checked::<u8>::from(5) - 6, Checked::<u8>::from(None));
 //! ```
 //!
-//! `PartialOrd` is implemented, and the overflow state not comparable to anything else.
+//! `PartialOrd` is implemented, and the overflow state is not comparable to anything else.
 //!
 //! ```
 //! use checked::Checked;
