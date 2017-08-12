@@ -1,7 +1,9 @@
 use std::fmt;
 use std::ops::*;
+use std::cmp::Ordering;
 
-#[derive(PartialEq, Eq, PartialOrd, Ord, Clone, Copy, Default, Hash)]
+/// The Checked type. See the [module level documentation for more.](index.html)
+#[derive(PartialEq, Eq, Clone, Copy, Hash)]
 pub struct Checked<T>(pub Option<T>);
 
 impl<T> Checked<T> {
@@ -15,14 +17,26 @@ impl<T> Checked<T> {
     /// let y = Checked::new(1_000_000_u32);
     /// assert_eq!(x * x, y);
     /// ```
+    #[inline]
     pub fn new(x: T) -> Checked<T> {
         Checked(Some(x))
     }
 }
 
+// The derived Default only works if T has Default
+// Even though this is what it would be anyway
+// May change this to T's default (if it has one)
+impl<T> Default for Checked<T> {
+    #[inline]
+    fn default() -> Checked<T> {
+        Checked(None)
+    }
+}
+
 impl<T: fmt::Debug> fmt::Debug for Checked<T> {
+    #[inline]
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self.0 {
+        match **self {
             Some(ref x) => x.fmt(f),
             None => "overflow".fmt(f),
         }
@@ -30,38 +44,73 @@ impl<T: fmt::Debug> fmt::Debug for Checked<T> {
 }
 
 impl<T: fmt::Display> fmt::Display for Checked<T> {
+    #[inline]
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
-        match self.0 {
+        match **self {
             Some(ref x) => x.fmt(f),
             None => "overflow".fmt(f),
         }
     }
 }
 
+// I'd like to do
+// `impl<T, U> From<U> where T: From<U> for Checked<T>``
+// in the obvious way, but that "conflicts" with the default `impl From<T> for T`.
+// This would subsume both the below Froms since Option has the right From impl.
 impl<T> From<T> for Checked<T> {
+    #[inline]
     fn from(x: T) -> Checked<T> {
         Checked(Some(x))
     }
 }
 
 impl<T> From<Option<T>> for Checked<T> {
+    #[inline]
     fn from(x: Option<T>) -> Checked<T> {
         Checked(x)
     }
 }
 
-// I'd like to
-// impl<T, U> From<U> where T: From<U> for Checked<T>
-// in the obvious way, but that "conflicts" with the default impl From<T> for T.
-// This would subsume both the above Froms since Option has the right From impl.
+impl<T> Deref for Checked<T> {
+    type Target = Option<T>;
 
-// implements the unary operator "op &T"
-// based on "op T" where T is expected to be `Copy`able
+    #[inline]
+    fn deref(&self) -> &Option<T> {
+        &self.0
+    }
+}
+
+impl<T> DerefMut for Checked<T> {
+    #[inline]
+    fn deref_mut(&mut self) -> &mut Option<T> {
+        &mut self.0
+    }
+}
+
+impl<T: PartialOrd> PartialOrd for Checked<T> {
+    fn partial_cmp(&self, other: &Checked<T>) -> Option<Ordering> {
+        // I'm not really sure why we can't match **self etc. here.
+        // Even with refs everywhere it complains
+        // Note what happens in this implementation:
+        // we take the reference self, and call deref (the method) on it
+        // By Deref coercion, self gets derefed to a Checked<T>
+        // Now Checked<T>'s deref gets called, returning a &Option<T>
+        // That's what gets matched
+        match (self.deref(), other.deref()) {
+            (&Some(ref x), &Some(ref y)) => PartialOrd::partial_cmp(x, y),
+            _ => None,
+        }
+    }
+}
+
+// implements the unary operator `op &T`
+// based on `op T` where `T` is expected to be `Copy`able
 macro_rules! forward_ref_unop {
     (impl $imp:ident, $method:ident for $t:ty {}) => {
         impl<'a> $imp for &'a $t {
             type Output = <$t as $imp>::Output;
 
+            #[inline]
             fn $method(self) -> <$t as $imp>::Output {
                 $imp::$method(*self)
             }
@@ -76,6 +125,7 @@ macro_rules! forward_ref_binop {
         impl<'a> $imp<$u> for &'a $t {
             type Output = <$t as $imp<$u>>::Output;
 
+            #[inline]
             fn $method(self, other: $u) -> <$t as $imp<$u>>::Output {
                 $imp::$method(*self, other)
             }
@@ -84,6 +134,7 @@ macro_rules! forward_ref_binop {
         impl<'a> $imp<&'a $u> for $t {
             type Output = <$t as $imp<$u>>::Output;
 
+            #[inline]
             fn $method(self, other: &'a $u) -> <$t as $imp<$u>>::Output {
                 $imp::$method(self, *other)
             }
@@ -92,6 +143,7 @@ macro_rules! forward_ref_binop {
         impl<'a, 'b> $imp<&'a $u> for &'b $t {
             type Output = <$t as $imp<$u>>::Output;
 
+            #[inline]
             fn $method(self, other: &'a $u) -> <$t as $imp<$u>>::Output {
                 $imp::$method(*self, *other)
             }
@@ -105,7 +157,7 @@ macro_rules! impl_sh {
             type Output = Checked<$t>;
 
             fn shl(self, other: Checked<$f>) -> Checked<$t> {
-                match (self.0, other.0) {
+                match (*self, *other) {
                     (Some(x), Some(y)) => Checked(x.checked_shl(y)),
                     _ => Checked(None),
                 }
@@ -116,7 +168,7 @@ macro_rules! impl_sh {
             type Output = Checked<$t>;
 
             fn shl(self, other: $f) -> Checked<$t> {
-                match self.0 {
+                match *self {
                     Some(x) => Checked(x.checked_shl(other)),
                     None => Checked(None),
                 }
@@ -127,12 +179,14 @@ macro_rules! impl_sh {
         forward_ref_binop! { impl Shl, shl for Checked<$t>, $f {} }
 
         impl ShlAssign<$f> for Checked<$t> {
+            #[inline]
             fn shl_assign(&mut self, other: $f) {
                 *self = *self << other;
             }
         }
 
         impl ShlAssign<Checked<$f>> for Checked<$t> {
+            #[inline]
             fn shl_assign(&mut self, other: Checked<$f>) {
                 *self = *self << other;
             }
@@ -142,7 +196,7 @@ macro_rules! impl_sh {
             type Output = Checked<$t>;
 
             fn shr(self, other: Checked<$f>) -> Checked<$t> {
-                match (self.0, other.0) {
+                match (*self, *other) {
                     (Some(x), Some(y)) => Checked(x.checked_shr(y)),
                     _ => Checked(None),
                 }
@@ -153,7 +207,7 @@ macro_rules! impl_sh {
             type Output = Checked<$t>;
 
             fn shr(self, other: $f) -> Checked<$t> {
-                match self.0 {
+                match *self {
                     Some(x) => Checked(x.checked_shr(other)),
                     None => Checked(None),
                 }
@@ -164,12 +218,14 @@ macro_rules! impl_sh {
         forward_ref_binop! { impl Shr, shr for Checked<$t>, $f {} }
 
         impl ShrAssign<$f> for Checked<$t> {
+            #[inline]
             fn shr_assign(&mut self, other: $f) {
                 *self = *self >> other;
             }
         }
 
         impl ShrAssign<Checked<$f>> for Checked<$t> {
+            #[inline]
             fn shr_assign(&mut self, other: Checked<$f>) {
                 *self = *self >> other;
             }
@@ -183,7 +239,7 @@ macro_rules! impl_sh_reverse {
             type Output = Checked<$f>;
 
             fn shl(self, other: Checked<$t>) -> Checked<$f> {
-                match other.0 {
+                match *other {
                     Some(x) => Checked(self.checked_shl(x)),
                     None => Checked(None),
                 }
@@ -196,7 +252,7 @@ macro_rules! impl_sh_reverse {
             type Output = Checked<$f>;
 
             fn shr(self, other: Checked<$t>) -> Checked<$f> {
-                match other.0 {
+                match *other {
                     Some(x) => Checked(self.checked_shr(x)),
                     None => Checked(None),
                 }
@@ -245,7 +301,7 @@ macro_rules! impl_unop {
             type Output = Checked<$t>;
 
             fn $method(self) -> Checked<$t> {
-                match self.0 {
+                match *self {
                     Some(x) => Checked(x.$checked_method()),
                     None => Checked(None)
                 }
@@ -263,7 +319,7 @@ macro_rules! impl_unop_unchecked {
             type Output = Checked<$t>;
 
             fn $method(self) -> Checked<$t> {
-                match self.0 {
+                match *self {
                     Some(x) => Checked(Some($op x)),
                     None => Checked(None)
                 }
@@ -281,7 +337,7 @@ macro_rules! impl_binop {
             type Output = Checked<$t>;
 
             fn $method(self, other: Checked<$t>) -> Checked<$t> {
-                match (self.0, other.0) {
+                match (*self, *other) {
                     (Some(x), Some(y)) => Checked(x.$checked_method(y)),
                     _ => Checked(None),
                 }
@@ -292,7 +348,7 @@ macro_rules! impl_binop {
             type Output = Checked<$t>;
 
             fn $method(self, other: $t) -> Checked<$t> {
-                match self.0 {
+                match *self {
                     Some(x) => Checked(x.$checked_method(other)),
                     _ => Checked(None),
                 }
@@ -303,7 +359,7 @@ macro_rules! impl_binop {
             type Output = Checked<$t>;
 
             fn $method(self, other: Checked<$t>) -> Checked<$t> {
-                match other.0 {
+                match *other {
                     Some(x) => Checked(self.$checked_method(x)),
                     None => Checked(None),
                 }
@@ -323,7 +379,7 @@ macro_rules! impl_binop_unchecked {
             type Output = Checked<$t>;
 
             fn $method(self, other: Checked<$t>) -> Checked<$t> {
-                match (self.0, other.0) {
+                match (*self, *other) {
                     (Some(x), Some(y)) => Checked(Some(x $op y)),
                     _ => Checked(None),
                 }
@@ -334,7 +390,7 @@ macro_rules! impl_binop_unchecked {
             type Output = Checked<$t>;
 
             fn $method(self, other: $t) -> Checked<$t> {
-                match self.0 {
+                match *self {
                     Some(x) => Checked(Some(x $op other)),
                     _ => Checked(None),
                 }
@@ -345,7 +401,7 @@ macro_rules! impl_binop_unchecked {
             type Output = Checked<$t>;
 
             fn $method(self, other: Checked<$t>) -> Checked<$t> {
-                match other.0 {
+                match *other {
                     Some(x) => Checked(Some(self $op x)),
                     None => Checked(None),
                 }
@@ -362,12 +418,14 @@ macro_rules! impl_binop_unchecked {
 macro_rules! impl_binop_assign {
     (impl $imp:ident, $method:ident for $t:ty {$op:tt}) => {
         impl $imp for Checked<$t> {
+            #[inline]
             fn $method(&mut self, other: Checked<$t>) {
                 *self = *self $op other;
             }
         }
 
         impl $imp<$t> for Checked<$t> {
+            #[inline]
             fn $method(&mut self, other: $t) {
                 *self = *self $op other;
             }
@@ -396,6 +454,7 @@ macro_rules! checked_impl {
             impl_binop_unchecked! { impl BitAnd, bitand for $t {&} }
             impl_binop_assign! { impl BitAndAssign, bitand_assign for $t {&} }
             impl_unop! { impl Neg, neg, checked_neg for $t {} }
+
         )*
     };
 }
