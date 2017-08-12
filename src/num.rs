@@ -17,6 +17,7 @@ impl<T> Checked<T> {
     /// let y = Checked::new(1_000_000_u32);
     /// assert_eq!(x * x, y);
     /// ```
+    #[inline]
     pub fn new(x: T) -> Checked<T> {
         Checked(Some(x))
     }
@@ -26,12 +27,14 @@ impl<T> Checked<T> {
 // Even though this is what it would be anyway
 // May change this to T's default (if it has one)
 impl<T> Default for Checked<T> {
+    #[inline]
     fn default() -> Checked<T> {
         Checked(None)
     }
 }
 
 impl<T: fmt::Debug> fmt::Debug for Checked<T> {
+    #[inline]
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match **self {
             Some(ref x) => x.fmt(f),
@@ -41,6 +44,7 @@ impl<T: fmt::Debug> fmt::Debug for Checked<T> {
 }
 
 impl<T: fmt::Display> fmt::Display for Checked<T> {
+    #[inline]
     fn fmt(&self, f: &mut fmt::Formatter) -> fmt::Result {
         match **self {
             Some(ref x) => x.fmt(f),
@@ -54,12 +58,14 @@ impl<T: fmt::Display> fmt::Display for Checked<T> {
 // in the obvious way, but that "conflicts" with the default `impl From<T> for T`.
 // This would subsume both the below Froms since Option has the right From impl.
 impl<T> From<T> for Checked<T> {
+    #[inline]
     fn from(x: T) -> Checked<T> {
         Checked(Some(x))
     }
 }
 
 impl<T> From<Option<T>> for Checked<T> {
+    #[inline]
     fn from(x: Option<T>) -> Checked<T> {
         Checked(x)
     }
@@ -68,12 +74,14 @@ impl<T> From<Option<T>> for Checked<T> {
 impl<T> Deref for Checked<T> {
     type Target = Option<T>;
 
+    #[inline]
     fn deref(&self) -> &Option<T> {
         &self.0
     }
 }
 
 impl<T> DerefMut for Checked<T> {
+    #[inline]
     fn deref_mut(&mut self) -> &mut Option<T> {
         &mut self.0
     }
@@ -102,6 +110,7 @@ macro_rules! forward_ref_unop {
         impl<'a> $imp for &'a $t {
             type Output = <$t as $imp>::Output;
 
+            #[inline]
             fn $method(self) -> <$t as $imp>::Output {
                 $imp::$method(*self)
             }
@@ -116,6 +125,7 @@ macro_rules! forward_ref_binop {
         impl<'a> $imp<$u> for &'a $t {
             type Output = <$t as $imp<$u>>::Output;
 
+            #[inline]
             fn $method(self, other: $u) -> <$t as $imp<$u>>::Output {
                 $imp::$method(*self, other)
             }
@@ -124,6 +134,7 @@ macro_rules! forward_ref_binop {
         impl<'a> $imp<&'a $u> for $t {
             type Output = <$t as $imp<$u>>::Output;
 
+            #[inline]
             fn $method(self, other: &'a $u) -> <$t as $imp<$u>>::Output {
                 $imp::$method(self, *other)
             }
@@ -132,6 +143,7 @@ macro_rules! forward_ref_binop {
         impl<'a, 'b> $imp<&'a $u> for &'b $t {
             type Output = <$t as $imp<$u>>::Output;
 
+            #[inline]
             fn $method(self, other: &'a $u) -> <$t as $imp<$u>>::Output {
                 $imp::$method(*self, *other)
             }
@@ -167,12 +179,14 @@ macro_rules! impl_sh {
         forward_ref_binop! { impl Shl, shl for Checked<$t>, $f {} }
 
         impl ShlAssign<$f> for Checked<$t> {
+            #[inline]
             fn shl_assign(&mut self, other: $f) {
                 *self = *self << other;
             }
         }
 
         impl ShlAssign<Checked<$f>> for Checked<$t> {
+            #[inline]
             fn shl_assign(&mut self, other: Checked<$f>) {
                 *self = *self << other;
             }
@@ -204,12 +218,14 @@ macro_rules! impl_sh {
         forward_ref_binop! { impl Shr, shr for Checked<$t>, $f {} }
 
         impl ShrAssign<$f> for Checked<$t> {
+            #[inline]
             fn shr_assign(&mut self, other: $f) {
                 *self = *self >> other;
             }
         }
 
         impl ShrAssign<Checked<$f>> for Checked<$t> {
+            #[inline]
             fn shr_assign(&mut self, other: Checked<$f>) {
                 *self = *self >> other;
             }
@@ -402,12 +418,14 @@ macro_rules! impl_binop_unchecked {
 macro_rules! impl_binop_assign {
     (impl $imp:ident, $method:ident for $t:ty {$op:tt}) => {
         impl $imp for Checked<$t> {
+            #[inline]
             fn $method(&mut self, other: Checked<$t>) {
                 *self = *self $op other;
             }
         }
 
         impl $imp<$t> for Checked<$t> {
+            #[inline]
             fn $method(&mut self, other: $t) {
                 *self = *self $op other;
             }
