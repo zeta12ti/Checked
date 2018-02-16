@@ -226,7 +226,6 @@ fn ref_option_methods() {
         println!("{:?}", t);
     }
 
-
     println!("Numbers in y: ");
     for t in y.iter() {
         println!("{:?}", t);
@@ -246,7 +245,6 @@ fn mut_ref_option_methods() {
         println!("{:?}", t);
     }
 
-
     println!("Numbers in y: ");
     for t in y.iter_mut() {
         println!("{:?}", t);
@@ -260,4 +258,14 @@ fn mut_ref_option_methods() {
     let w = y.take();
     assert_eq!(w, None);
     assert_eq!(y, Checked::<i64>::from(None));
+}
+
+#[test]
+fn neutral_elements() {
+    use num_traits::{One, Zero};
+    assert_eq!(Checked::<u8>::zero(), Checked::<u8>::from(Some(0)));
+    assert_eq!(Checked::<u8>::one(), Checked::<u8>::from(Some(1)));
+    assert_eq!(Checked::<u8>::from(Some(0)).is_zero(), true);
+    assert_eq!(Checked::<u8>::from(Some(5)).is_zero(), false);
+    assert_eq!(Checked::<u8>::from(None).is_zero(), false);
 }

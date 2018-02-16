@@ -18,3 +18,4 @@ travis-ci = { repository = "zeta12ti/Checked", branch = "master" }
 appveyor = { repository = "zeta12ti/checked", branch = "master", service = "github" }
 
 [dependencies]
+num-traits = "0.2.0"
