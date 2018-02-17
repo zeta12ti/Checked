@@ -1,3 +1,4 @@
+use num_traits::{One, Zero};
 use std::fmt;
 use std::ops::*;
 use std::cmp::Ordering;
@@ -100,6 +101,30 @@ impl<T: PartialOrd> PartialOrd for Checked<T> {
             (&Some(ref x), &Some(ref y)) => PartialOrd::partial_cmp(x, y),
             _ => None,
         }
+    }
+}
+
+impl<T> Zero for Checked<T>
+where
+    T: Zero,
+    Checked<T>: Add<Checked<T>, Output = Checked<T>>,
+{
+    fn zero() -> Checked<T> {
+        Checked(Some(T::zero()))
+    }
+
+    fn is_zero(&self) -> bool {
+        self.deref().as_ref().map_or(false, Zero::is_zero)
+    }
+}
+
+impl<T> One for Checked<T>
+where
+    T: One,
+    Checked<T>: Mul<Checked<T>, Output = Checked<T>>,
+{
+    fn one() -> Checked<T> {
+        Checked(Some(T::one()))
     }
 }
 

@@ -60,6 +60,7 @@
 //! assert!(!(Checked::from(1_000_u32) <= Checked::from(None)));
 //! assert!(!(Checked::from(None) <= Checked::from(1_000_u32)));
 //! ```
+extern crate num_traits;
 
 mod num;
 pub use num::Checked;
